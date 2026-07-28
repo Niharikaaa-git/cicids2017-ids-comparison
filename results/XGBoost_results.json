@@ -7,8 +7,8 @@
   "ROC-AUC": NaN,
   "MCC": 0.995359355398137,
   "Cohen's Kappa": 0.9953576378519124,
-  "Train Time (s)": 428.3230767250061,
-  "Prediction Time (s)": 2.0010018348693848,
+  "Train Time (s)": 425.64895963668823,
+  "Prediction Time (s)": 2.0549957752227783,
   "Confusion Matrix": [
     [
       43788,
