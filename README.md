@@ -69,3 +69,20 @@ pip install pandas numpy scikit-learn xgboost lightgbm imbalanced-learn tensorfl
 Add `.sample(n=..., random_state=SEED)` right after the merge step in
 `00_Preprocessing.ipynb`, and/or reduce `nsamples` in the
 `KernelExplainer.shap_values(...)` call in `07_Comparison.ipynb`.
+
+## What you DO need to redo each time you come back:
+
+Open Git Bash
+cd into your project folder:
+
+bash
+   cd ~/Desktop/[folder name]
+   
+Start the Jupyter server again:
+
+bash
+   python.exe -m notebook
+   
+Open the browser link it gives you
+
+Open whichever notebook you want to continue with
