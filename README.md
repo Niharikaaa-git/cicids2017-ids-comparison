@@ -82,5 +82,5 @@ bash
 Open the browser link it gives you
    Open whichever notebook you want to continue with
 
-## Claude's Plan was REAL
+PS: [Claude's Plan was REAL]
 
