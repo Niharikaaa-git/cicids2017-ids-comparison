@@ -73,14 +73,14 @@ Add `.sample(n=..., random_state=SEED)` right after the merge step in
 ## What you DO need to redo each time you come back:
 
 Open Git Bash
-cd into your project folder:
-bash
+--cd into your project folder:
+--bash
    cd ~/Desktop/[folder name]
-Start the Jupyter server again:
-bash
+--Start the Jupyter server again:
+--bash
    python.exe -m notebook
-Open the browser link it gives you
-   Open whichever notebook you want to continue with
+--Open the browser link it gives you
+   -Open whichever notebook you want to continue with
 
 PS: [Claude's Plan was REAL]
 
