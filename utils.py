@@ -42,7 +42,7 @@ def evaluate(name, y_test, y_pred, y_proba, train_time, infer_time, n_classes):
         auc = float("nan")
     mcc = matthews_corrcoef(y_test, y_pred)
     kappa = cohen_kappa_score(y_test, y_pred)
-    cm = confusion_matrix(y_test, y_pred)
+ cm = confusion_matrix(y_test, y_pred, labels=np.arange(n_classes))
 
     return {
         "Model": name, "Accuracy": acc, "Precision": prec, "Recall": rec,
