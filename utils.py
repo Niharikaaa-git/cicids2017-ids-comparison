@@ -27,22 +27,16 @@ def evaluate(name, y_test, y_pred, y_proba, train_time, infer_time, n_classes):
     prec = precision_score(y_test, y_pred, average="macro", zero_division=0)
     rec = recall_score(y_test, y_pred, average="macro", zero_division=0)
     f1 = f1_score(y_test, y_pred, average="macro", zero_division=0)
-   try:
+    try:
         if n_classes == 2:
             auc = roc_auc_score(y_test, y_proba[:, 1])
         else:
-            auc = roc_auc_score(
-                y_test, y_proba,
-                multi_class="ovr",
-                average="macro",
-                labels=np.arange(n_classes),
-            )
-    except ValueError as e:
-        print(f"[{name}] ROC-AUC could not be computed: {e}")
+            auc = roc_auc_score(y_test, y_proba, multi_class="ovr", average="macro")
+    except ValueError:
         auc = float("nan")
     mcc = matthews_corrcoef(y_test, y_pred)
     kappa = cohen_kappa_score(y_test, y_pred)
- cm = confusion_matrix(y_test, y_pred, labels=np.arange(n_classes))
+    cm = confusion_matrix(y_test, y_pred)
 
     return {
         "Model": name, "Accuracy": acc, "Precision": prec, "Recall": rec,
