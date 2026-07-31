@@ -80,7 +80,7 @@ Open Git Bash
 --bash
    python.exe -m notebook
 --Open the browser link it gives you
-   -Open whichever notebook you want to continue with
+   -Open whichever notebook you want to continue with.
 
 
 
