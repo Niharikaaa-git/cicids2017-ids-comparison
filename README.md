@@ -82,5 +82,5 @@ Open Git Bash
 --Open the browser link it gives you
    -Open whichever notebook you want to continue with
 
-PS: [Claude's Plan was REAL]
+
 
