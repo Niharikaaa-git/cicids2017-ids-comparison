@@ -21,7 +21,9 @@ presentation instead of flipping through static images.
 ```bash
 streamlit run app.py
 ```
-
+```bash
+ python -m streamlit run app.py
+```
 This opens a browser tab automatically (usually `http://localhost:8501`).
 Leave the terminal window open while you're presenting — closing it shuts
 the app down, same as the Jupyter server.
