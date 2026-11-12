@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IDS Model Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f4f1ff;--surface:#fff;--ink:#1d1544;--muted:#6b6590;--line:#e6e0fb;--ml:#0fa57a;--dl:#ff6b4a;--accent:#6a3df0;--g1:#6a3df0;--g2:#ff4fa3;--shadow:0 10px 28px rgba(106,61,240,.12);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150f2e;--surface:#211a45;--ink:#f1edff;--muted:#a89fd6;--line:#34296b;--ml:#3ddba8;--dl:#ff8a6b;--accent:#9a78ff;--g2:#d63b8f;--shadow:0 10px 28px rgba(0,0,0,.35)}}
+:root[data-theme="dark"]{--bg:#150f2e;--surface:#211a45;--ink:#f1edff;--muted:#a89fd6;--line:#34296b;--ml:#3ddba8;--dl:#ff8a6b;--accent:#9a78ff;--g2:#d63b8f;--shadow:0 10px 28px rgba(0,0,0,.35)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Plus Jakarta Sans",system-ui,sans-serif}
+header{background:linear-gradient(120deg,var(--g1),var(--g2));color:#fff;border-radius:0 0 32px 32px}
+.top{max-width:1040px;margin:0 auto;padding:18px 18px 8px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.brand{font:800 1.4rem "Plus Jakarta Sans",sans-serif;letter-spacing:-.02em}
+header label{color:rgba(255,255,255,.9)!important}
+header select{border-radius:999px;border:0;padding:8px 16px;font-weight:600}
+nav{display:flex;flex-wrap:wrap;gap:8px;max-width:1040px;margin:0 auto;padding:6px 14px 20px}
+nav a{color:#fff;text-decoration:none;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.16);font-weight:600}
+nav a[aria-current="page"]{background:#fff;color:#4b1fc4}
+nav a:focus-visible{outline:3px solid #fff;outline-offset:2px}
+button:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+main{max-width:1040px;margin:0 auto;padding:30px 18px 64px}
+h1,h2{font-family:"Plus Jakarta Sans",sans-serif;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:0 0 8px}
+h1{font-size:clamp(1.9rem,5vw,2.8rem);max-width:20ch}
+h2{font-size:1.5rem}
+p{margin:0 0 10px;max-width:70ch}
+.muted{color:var(--muted)}
+.view{display:none}.view.on{display:block}
+.view>*+*{margin-top:24px}
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));background:linear-gradient(135deg,#6a3df0,#ff4fa3 70%,#ff8a4a);color:#fff;border-radius:28px;padding:22px;box-shadow:var(--shadow)}
+.stats>div{background:rgba(255,255,255,.16);border-radius:20px;padding:14px 16px}
+.stats b{display:block;font:800 1.55rem "Plus Jakarta Sans",sans-serif;overflow-wrap:anywhere}
+.stats span{color:rgba(255,255,255,.92);font-size:.9rem}
+.panel{background:var(--surface);border-radius:24px;padding:20px;box-shadow:var(--shadow)}
+.bar{display:flex;flex-wrap:wrap;gap:8px}
+button,select,input,textarea{font:inherit;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:8px 16px}
+button{cursor:pointer;font-weight:600}
+button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.primary{background:linear-gradient(120deg,var(--g1),var(--g2));color:#fff;border:0;padding:11px 24px}
+.chart{position:relative;height:320px}
+.legend{display:flex;gap:16px;font-size:.9rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:660px;font-size:.92rem}
+th,td{text-align:right;padding:11px 10px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600}
+tr.top td{font-weight:800;color:var(--accent)}
+ol.flow{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+ol.flow li{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:center;background:var(--surface);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow)}
+ol.flow em{font-style:normal;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--g1),var(--g2));width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
+details{background:var(--surface);border-radius:20px;padding:14px 18px;margin-bottom:10px;box-shadow:var(--shadow)}
+summary{cursor:pointer;font-weight:700}
+details p{margin:10px 0 0;color:var(--muted)}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input[type=text],textarea{width:100%;border-radius:16px}
+textarea{min-height:110px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem}
+.msg{margin-top:10px;font-size:.92rem}
+.msg.err{color:var(--dl);font-weight:600}
+.dslist{list-style:none;margin:0;padding:0}
+.dslist li{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+code{background:var(--bg);padding:2px 7px;border-radius:8px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);color:var(--ink);border-radius:0;box-shadow:0 2px 16px rgba(106,61,240,.10)}
+.top{max-width:1100px;margin:0 auto;padding:10px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.brand{color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand::before{content:"";width:28px;height:28px;border-radius:9px;background:linear-gradient(135deg,var(--g1),var(--g2))}
+.top nav{display:flex;flex-wrap:wrap;gap:4px;padding:0;margin:0;max-width:none}
+.top nav a{background:none;color:var(--muted);padding:8px 14px}
+.top nav a:hover{color:var(--ink)}
+.top nav a[aria-current="page"]{background:var(--accent);color:#fff}
+.top nav a:focus-visible{outline-color:var(--accent)}
+header label{color:var(--muted)!important}
+header select{border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+main{max-width:1100px}
+.hero{background:linear-gradient(135deg,#6a3df0,#ff4fa3 70%,#ff8a4a);color:#fff;border-radius:32px;padding:clamp(28px,6vw,64px);box-shadow:var(--shadow)}
+.hero h1{max-width:18ch;font-size:clamp(2.1rem,6vw,3.6rem);margin-bottom:14px}
+.hero p{font-size:1.1rem;color:rgba(255,255,255,.94)}
+.chip{display:inline-block;background:rgba(255,255,255,.2);border-radius:999px;padding:6px 14px;font-weight:600;font-size:.9rem;margin-bottom:16px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.btn{display:inline-block;text-decoration:none;font-weight:700;border-radius:999px;padding:12px 26px}
+.btn.solid{background:#fff;color:#4b1fc4}
+.btn.ghost{border:2px solid rgba(255,255,255,.85);color:#fff}
+.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.band{background:var(--surface);border-radius:28px;padding:26px;box-shadow:var(--shadow);display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));text-align:center}
+.band b{display:block;font:800 2rem "Plus Jakarta Sans",sans-serif;color:var(--accent)}
+.band span{color:var(--muted);font-size:.92rem}
+.features{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.feat{background:var(--surface);border-radius:24px;padding:22px;box-shadow:var(--shadow)}
+.feat .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;margin-bottom:12px;background:var(--bg)}
+.feat h3{margin:0 0 6px;font-size:1.1rem}
+.feat p{margin:0;color:var(--muted);font-size:.95rem}
+footer{background:var(--surface);border-radius:32px 32px 0 0;box-shadow:0 -6px 24px rgba(106,61,240,.08)}
+.foot{max-width:1100px;margin:0 auto;padding:30px 18px 14px;display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.foot h4{margin:0 0 8px}
+.foot p{color:var(--muted);font-size:.92rem}
+.foot a{display:block;color:var(--muted);text-decoration:none;padding:2px 0}
+.foot a:hover{color:var(--accent)}
+.copy{max-width:1100px;margin:0 auto;padding:0 18px 26px;color:var(--muted);font-size:.85rem}
+:root{--bg:#fafbfc;--surface:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--ml:#2563eb;--dl:#64748b;--accent:#2563eb;--g1:#2563eb;--g2:#2563eb;--on:#fff;--shadow:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0f17;--surface:#111827;--ink:#f3f4f6;--muted:#9ca3af;--line:#1f2937;--ml:#60a5fa;--dl:#94a3b8;--accent:#60a5fa;--g1:#60a5fa;--g2:#60a5fa;--on:#0b1220;--shadow:none}}
+body,h1,h2,.brand,.stats b,.band b{font-family:"Inter",system-ui,sans-serif}
+header{box-shadow:none;border-bottom:1px solid var(--line)}
+.brand{color:var(--ink);font-weight:700;font-size:1.15rem}
+.brand::before{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+.top nav a{border-radius:0;font-weight:500;padding:8px 12px}
+.top nav a[aria-current="page"]{background:transparent;color:var(--accent);box-shadow:inset 0 -2px 0 var(--accent)}
+header select{border-radius:8px;border:1px solid var(--line)}
+h1,h2{font-weight:700;letter-spacing:-.025em}
+.hero{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:none}
+.hero p{color:var(--muted)}
+.chip{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent)}
+.btn{border-radius:8px}
+.btn.solid{background:var(--accent);color:var(--on)}
+.btn.ghost{border:1px solid var(--line);color:var(--ink)}
+.btn:focus-visible{outline-color:var(--accent)}
+.stats{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:none}
+.stats>div{background:var(--bg);border-radius:12px}
+.stats span{color:var(--muted)}
+.panel,.feat,.band,details,ol.flow li{border:1px solid var(--line);border-radius:14px;box-shadow:none}
+.band{border-radius:16px}
+.band b{color:var(--accent)}
+button,select,input,textarea{border:1px solid var(--line);border-radius:8px}
+button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on)}
+button.primary{background:var(--accent);color:var(--on);border:0;border-radius:8px}
+ol.flow li{grid-template-columns:34px 1fr}
+ol.flow em{background:color-mix(in srgb,var(--accent) 12%,transparent);color:var(--accent);border-radius:10px;width:34px;height:34px}
+.legend i{border-radius:3px}
+footer{border-radius:0;box-shadow:none;border-top:1px solid var(--line)}
+tr.top td{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+<div class="top"><a class="brand" href="#home">IDS Model Lab</a>
+<nav aria-label="Pages"><a href="#home">Home</a><a href="#overview">Overview</a><a href="#compare">Compare</a><a href="#pipeline">Pipeline</a><a href="#explain">Explain</a><a href="#add">Add dataset</a></nav>
+<label class="muted" style="margin:0;display:flex;gap:8px;align-items:center">Dataset <select id="dsSel"></select></label></div>
+</header>
+<main>
+
+<div class="view" id="v-home">
+<section class="hero"><span class="chip" id="hmBest"></span>
+<h1>Find the AI model that catches network attacks best</h1>
+<p>Compare machine learning and deep learning intrusion detection models side by side, on the same data and with fair metrics. Then add your own datasets and see how the models hold up.</p>
+<div class="cta"><a class="btn solid" href="#compare">See the comparison</a><a class="btn ghost" href="#add">Add a dataset</a></div></section>
+<div class="band"><div><b id="hmModels">6</b><span>Models compared</span></div><div><b id="hmCount">1</b><span>Datasets loaded</span></div><div><b id="hmF1">0</b><span>Best macro F1</span></div><div><b>9</b><span>Metrics tracked</span></div></div>
+<div class="features">
+<div class="feat"><div class="ic">📊</div><h3>Fair comparison</h3><p>Every model trains on the same data and is scored on the same untouched test set.</p></div>
+<div class="feat"><div class="ic">🛡️</div><h3>Built for rare attacks</h3><p>Macro F1 and MCC show whether rare attack types are caught, not just common traffic.</p></div>
+<div class="feat"><div class="ic">⚡</div><h3>Speed and quality</h3><p>See training and prediction time next to accuracy to pick a model you can actually deploy.</p></div>
+<div class="feat"><div class="ic">➕</div><h3>Bring your own data</h3><p>Upload a results CSV from any dataset and compare it with the rest.</p></div>
+</div>
+</div>
+
+<div class="view" id="v-overview">
+<div><h1 id="ovTitle"></h1><p class="muted" id="ovDesc"></p></div>
+<div class="stats" id="ovStats"></div>
+<div class="panel scroll"><table id="tbl"></table></div>
+<p class="muted" style="font-size:.88rem">Precision, recall and F1 are macro averages, so rare classes count as much as common ones. “n/a” means the value was missing in the results file.</p>
+</div>
+
+<div class="view" id="v-compare">
+<div><h2>Compare the models</h2><p class="muted">Pick a metric. Teal bars are machine learning, orange bars are deep learning.</p></div>
+<div class="bar" id="metricBar" role="group" aria-label="Metric"></div>
+<div class="panel"><div class="chart"><canvas id="barChart" role="img" aria-label="Bar chart of the selected metric by model"></canvas></div>
+<div class="legend"><span><i style="background:var(--ml)"></i>Machine learning</span><span><i style="background:var(--dl)"></i>Deep learning</span></div></div>
+<div><h2>Speed against quality</h2></div>
+<div class="panel"><div class="chart"><canvas id="scatter" role="img" aria-label="Training time against F1 score"></canvas></div></div>
+<div><h2>Across datasets</h2><p class="muted" id="xNote"></p></div>
+<div class="panel"><div class="chart"><canvas id="xChart" role="img" aria-label="F1 score by model for each dataset"></canvas></div></div>
+</div>
+
+<div class="view" id="v-pipeline">
+<div><h2>How the pipeline works</h2><p class="muted" id="plNote"></p></div>
+<ol class="flow" id="plList"></ol>
+<div><h2>Tech stack</h2></div>
+<div class="panel"><p><b>Models and data:</b> Python 3.11, pandas, NumPy, scikit-learn, imbalanced-learn (SMOTE), XGBoost, LightGBM, TensorFlow/Keras, SHAP, matplotlib, seaborn, joblib, run in Jupyter Notebook.</p>
+<p style="margin:0"><b>This website:</b> one HTML file with plain JavaScript and Chart.js. Added datasets are kept in your browser’s local storage, so they stay on your device.</p></div>
+</div>
+
+<div class="view" id="v-explain">
+<div><h2>How to explain this project</h2><p class="muted">The first answer updates with the dataset you select.</p></div>
+<div id="qa"></div>
+</div>
+
+<div class="view" id="v-add">
+<div><h2>Add another dataset</h2><p class="muted">Train the same models on a new dataset (for example CIC-IDS2018, UNSW-NB15 or NSL-KDD), then load the <code>results/comparison_table.csv</code> that <code>07_Comparison.ipynb</code> saves. It needs a <b>Model</b> column and an <b>F1-Score</b> column; the other metric columns are optional.</p></div>
+<div class="panel">
+<label for="dName">Dataset name</label><input type="text" id="dName" placeholder="UNSW-NB15">
+<label for="dDesc">Short description</label><input type="text" id="dDesc" placeholder="Modern traffic with 9 attack families">
+<label for="dFile">CSV file</label><input type="file" id="dFile" accept=".csv,text/csv">
+<label for="dCsv">or paste the CSV text</label><textarea id="dCsv" placeholder="Model,Accuracy,Precision,Recall,F1-Score,ROC-AUC,MCC,Cohen's Kappa,Train Time (s),Prediction Time (s)"></textarea>
+<label for="dPipe">Pipeline notes (optional, one step per line)</label><textarea id="dPipe" placeholder="Cleaned and encoded labels&#10;80/20 stratified split"></textarea>
+<p style="margin-top:14px"><button class="primary" id="dAdd">Add dataset</button></p>
+<p class="msg" id="dMsg" role="status"></p>
+</div>
+<div class="panel"><b>Your datasets</b><ul class="dslist" id="dsList"></ul></div>
+</div>
+
+</main>
+<footer>
+<div class="foot">
+<div><h4>IDS Model Lab</h4><p>A comparison of machine learning and deep learning models for network intrusion detection.</p></div>
+<div><h4>Pages</h4><a href="#overview">Overview</a><a href="#compare">Compare</a><a href="#pipeline">Pipeline</a><a href="#explain">Explain</a></div>
+<div><h4>Built with</h4><p>Python, scikit-learn, XGBoost, LightGBM, TensorFlow, SHAP. Site: HTML, JavaScript, Chart.js.</p></div>
+</div>
+<div class="copy">Results shown are from your own notebooks. Added datasets stay in your browser.</div>
+</footer>
+<script>
+const ML_ST=[{n:"XGBoost",t:"ML",acc:.998507,prec:.755880,rec:.770644,f1:.762544,auc:null,mcc:.995359,kappa:.995358,train:425.6,pred:2.05},
+{n:"LightGBM",t:"ML",acc:.998264,prec:.759443,rec:.766337,f1:.762398,auc:null,mcc:.994600,kappa:.994600,train:276.4,pred:14.78},
+{n:"Random Forest",t:"ML",acc:.997574,prec:.724527,rec:.754886,f1:.734381,auc:null,mcc:.992468,kappa:.992463,train:84.5,pred:.71},
+{n:"MLP",t:"DL",acc:.949349,prec:.520549,rec:.839059,f1:.590778,auc:null,mcc:.866778,kappa:.858881,train:154.9,pred:7.28},
+{n:"Autoencoder+MLP",t:"DL",acc:.937423,prec:.462932,rec:.837416,f1:.547596,auc:null,mcc:.841263,kappa:.830114,train:222.9,pred:2.20},
+{n:"1D CNN",t:"DL",acc:.910922,prec:.379810,rec:.756120,f1:.437558,auc:null,mcc:.780499,kappa:.765473,train:424.8,pred:3.78}];
+const BASE={id:"cicids2017",name:"CIC-IDS2017",builtin:true,
+desc:"Benchmark of realistic network traffic with 14 attack types plus benign flows: 15 classes, 78 flow features, 10% sample of each daily file.",
+pipeline:["Load 8 daily CSVs (10% sample each), then remove duplicates, infinities and missing values: 283,074 rows became 267,907.","Encode labels to 0–14 and make an 80/20 stratified split: 214,325 train and 53,582 test rows.","Fit StandardScaler on training data only, then apply it to the test set so nothing leaks.","Apply SMOTE to the training set only, raising rare classes to 30% of the majority class: 911,664 rows.","Train Random Forest, XGBoost, LightGBM, MLP, 1D CNN and Autoencoder+MLP on the same resampled set.","Score every model with one shared evaluate() function on the untouched test set, then explain the best models with SHAP."],
+models:ML_ST};
+let DS=[BASE],cur=0,bar,sc,xc;
+try{const s=JSON.parse(localStorage.getItem("ids_ds")||"[]");if(Array.isArray(s))DS=DS.concat(s)}catch(e){}
+const save=()=>{try{localStorage.setItem("ids_ds",JSON.stringify(DS.filter(d=>!d.builtin)))}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const col=m=>css(m.t==="ML"?"--ml":"--dl");
+const fx=(v,d=3)=>v==null?"n/a":v.toFixed(d);
+const ds=()=>DS[cur];
+const KEYS={"F1":"f1","MCC":"mcc","Precision":"prec","Recall":"rec","Accuracy":"acc","ROC-AUC":"auc"};
+let metric="F1";
+
+function render(){
+  const d=ds(),ms=[...d.models].sort((a,b)=>b.f1-a.f1),best=ms[0];
+  $("ovTitle").textContent=d.name;$("ovDesc").textContent=d.desc||"";
+  $("hmBest").textContent="Latest result: "+best.n+" leads on "+d.name;$("hmModels").textContent=ms.length;$("hmCount").textContent=DS.length;$("hmF1").textContent=best.f1.toFixed(3);
+  const mlF=ms.filter(m=>m.t==="ML"),dlF=ms.filter(m=>m.t==="DL");
+  const fast=[...ms].filter(m=>m.train!=null).sort((a,b)=>a.train-b.train)[0];
+  $("ovStats").innerHTML=`<div><b>${esc(best.n)}</b><span>Best by macro F1</span></div><div><b>${fx(best.f1)}</b><span>Its macro F1</span></div><div><b>${best.mcc==null?"n/a":fx(best.mcc)}</b><span>Its MCC</span></div><div><b>${fast?esc(fast.n):"n/a"}</b><span>Fastest to train</span></div>`;
+  $("tbl").innerHTML="<thead><tr><th>Model</th><th>Type</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th><th>ROC-AUC</th><th>MCC</th><th>Train (s)</th><th>Predict (s)</th></tr></thead><tbody>"+
+   ms.map((m,i)=>`<tr class="${i?"":"top"}"><td>${esc(m.n)}</td><td>${m.t}</td><td>${fx(m.acc,4)}</td><td>${fx(m.prec)}</td><td>${fx(m.rec)}</td><td>${fx(m.f1)}</td><td>${fx(m.auc)}</td><td>${fx(m.mcc)}</td><td>${fx(m.train,0)}</td><td>${fx(m.pred,2)}</td></tr>`).join("")+"</tbody>";
+  const avail=Object.keys(KEYS).filter(k=>ms.some(m=>m[KEYS[k]]!=null));
+  if(!avail.includes(metric))metric="F1";
+  $("metricBar").innerHTML="";
+  avail.forEach(k=>{const b=document.createElement("button");b.textContent=k;b.setAttribute("aria-pressed",k===metric);b.onclick=()=>{metric=k;render()};$("metricBar").appendChild(b)});
+  Chart.defaults.color=css("--muted");Chart.defaults.font.family='"Inter",sans-serif';
+  const k=KEYS[metric],bd=ms.filter(m=>m[k]!=null).sort((a,b)=>b[k]-a[k]);
+  if(bar)bar.destroy();
+  bar=new Chart($("barChart"),{type:"bar",data:{labels:bd.map(m=>m.n),datasets:[{data:bd.map(m=>m[k]),backgroundColor:bd.map(col),borderRadius:3}]},
+   options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:0,max:1,grid:{color:css("--line")}},x:{grid:{display:false}}}}});
+  if(sc)sc.destroy();
+  const sd=ms.filter(m=>m.train!=null);
+  sc=new Chart($("scatter"),{type:"scatter",data:{datasets:sd.map(m=>({label:m.n,data:[{x:m.train,y:m.f1}],backgroundColor:col(m),pointRadius:9}))},
+   options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10}},tooltip:{callbacks:{label:c=>c.dataset.label+": "+c.parsed.x.toFixed(0)+"s, F1 "+c.parsed.y.toFixed(3)}}},
+   scales:{x:{title:{display:true,text:"Training time (seconds)"},grid:{color:css("--line")}},y:{title:{display:true,text:"Macro F1"},grid:{color:css("--line")}}}}});
+  const names=[...new Set(DS.flatMap(x=>x.models.map(m=>m.n)))];
+  const pal=[css("--ml"),css("--dl"),"#93c5fd","#cbd5e1","#1e3a8a"];
+  $("xNote").textContent=DS.length>1?"Macro F1 for each model, grouped by dataset.":"Add a second dataset to compare how models hold up across datasets.";
+  if(xc)xc.destroy();
+  xc=new Chart($("xChart"),{type:"bar",data:{labels:names,datasets:DS.map((x,i)=>({label:x.name,backgroundColor:pal[i%pal.length],borderRadius:3,data:names.map(n=>{const m=x.models.find(q=>q.n===n);return m?m.f1:null})}))},
+   options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10}}},scales:{y:{min:0,max:1,grid:{color:css("--line")}},x:{grid:{display:false}}}}});
+  const pl=d.pipeline&&d.pipeline.length?d.pipeline:[];
+  $("plNote").textContent=pl.length?"Steps used for "+d.name+".":"No pipeline notes were added for "+d.name+".";
+  $("plList").innerHTML=pl.map((s,i)=>`<li><em>${i+1}</em><div>${esc(s)}</div></li>`).join("");
+  const dlAvg=dlF.length?dlF.reduce((a,m)=>a+m.f1,0)/dlF.length:null,mlAvg=mlF.length?mlF.reduce((a,m)=>a+m.f1,0)/mlF.length:null;
+  const cmp=mlAvg!=null&&dlAvg!=null?` Tree and classic ML models average F1 ${mlAvg.toFixed(3)} against ${dlAvg.toFixed(3)} for deep learning.`:"";
+  $("qa").innerHTML=`<details open><summary>What did ${esc(d.name)} show?</summary><p>${esc(best.n)} scored highest with macro F1 ${best.f1.toFixed(3)} among ${ms.length} models.${cmp}</p></details>
+<details><summary>What problem does it solve?</summary><p>An intrusion detection system must label each network flow as normal or as a type of attack. This project tests which model family does that best.</p></details>
+<details><summary>Why compare on the same data?</summary><p>Every model uses the same training set, the same test set and the same evaluation function, so score gaps come from the model, not the setup.</p></details>
+<details><summary>Why macro F1 and MCC instead of accuracy?</summary><p>Benign traffic dominates, so accuracy looks high even for weak models. Macro F1 and MCC penalise a model that ignores rare attacks.</p></details>
+<details><summary>Why did tree models beat deep learning on CIC-IDS2017?</summary><p>The features are tabular flow statistics, which boosted trees handle well. The neural networks caught more attacks (recall about 0.84) but raised many false alarms (precision about 0.5).</p></details>
+<details><summary>Why SMOTE only on training data?</summary><p>Synthetic samples in the test set would inflate scores. Keeping the test set untouched keeps results honest.</p></details>
+<details><summary>What are the limitations?</summary><p>Only 10% of CIC-IDS2017 was used, rare classes such as Heartbleed (2 rows) are too small to judge, results come from one split, and ROC-AUC is still pending.</p></details>`;
+  $("dsList").innerHTML=DS.map((x,i)=>`<li><span>${esc(x.name)} <span class="muted">(${x.models.length} models)</span></span>${x.builtin?'<span class="muted">built in</span>':`<button data-rm="${i}">Remove</button>`}</li>`).join("");
+  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{DS.splice(+b.dataset.rm,1);cur=Math.min(cur,DS.length-1);save();fillSel();render()});
+}
+function fillSel(){$("dsSel").innerHTML=DS.map((x,i)=>`<option value="${i}">${esc(x.name)}</option>`).join("");$("dsSel").value=cur}
+$("dsSel").onchange=e=>{cur=+e.target.value;render()};
+
+function parseCSV(t){const rows=[];let r=[],c="",q=false;
+ for(let i=0;i<t.length;i++){const ch=t[i];
+  if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
+  else if(ch=='"')q=true;else if(ch==','){r.push(c);c=""}
+  else if(ch=="\n"||ch=="\r"){if(ch=="\r"&&t[i+1]=="\n")i++;r.push(c);c="";if(r.some(x=>x.trim()))rows.push(r);r=[]}else c+=ch}
+ r.push(c);if(r.some(x=>x.trim()))rows.push(r);return rows}
+const HM={model:"n",accuracy:"acc",precision:"prec",recall:"rec",f1score:"f1",f1:"f1",rocauc:"auc",auc:"auc",mcc:"mcc",cohenskappa:"kappa",kappa:"kappa",traintimes:"train",traintime:"train",predictiontimes:"pred",predictiontime:"pred",infertime:"pred"};
+const DLRE=/mlp|cnn|lstm|gru|rnn|autoencoder|dnn|transformer|neural|bert/i;
+function toModels(text){
+ const rows=parseCSV(text);if(rows.length<2)throw new Error("The CSV needs a header row and at least one model row.");
+ const map=rows[0].map(h=>HM[h.toLowerCase().replace(/[^a-z0-9]/g,"")]||null);
+ if(!map.includes("n")||!map.includes("f1"))throw new Error("Missing a Model column or an F1-Score column in the header.");
+ return rows.slice(1).map(r=>{const o={t:"ML"};map.forEach((k,i)=>{if(!k)return;if(k==="n")o.n=(r[i]||"").trim();else{const v=parseFloat(r[i]);o[k]=isNaN(v)?null:v}});
+  if(DLRE.test(o.n))o.t="DL";["acc","prec","rec","auc","mcc","kappa","train","pred"].forEach(k=>{if(o[k]===undefined)o[k]=null});return o}).filter(o=>o.n&&o.f1!=null);
+}
+function msg(t,err){$("dMsg").textContent=t;$("dMsg").className="msg"+(err?" err":"")}
+$("dFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{$("dCsv").value=rd.result;if(!$("dName").value)$("dName").value=f.name.replace(/\.csv$/i,"")};rd.readAsText(f)};
+$("dAdd").onclick=()=>{
+ const name=$("dName").value.trim();
+ if(!name)return msg("Enter a dataset name.",true);
+ if(DS.some(x=>x.name.toLowerCase()===name.toLowerCase()))return msg("A dataset with that name already exists.",true);
+ try{const models=toModels($("dCsv").value);if(!models.length)throw new Error("No valid model rows found. Check that F1-Score has numbers.");
+  DS.push({id:"u"+Date.now(),name,desc:$("dDesc").value.trim(),pipeline:$("dPipe").value.split("\n").map(s=>s.trim()).filter(Boolean),models});
+  cur=DS.length-1;save();fillSel();render();
+  ["dName","dDesc","dCsv","dPipe","dFile"].forEach(i=>$(i).value="");
+  msg("Added "+name+" with "+models.length+" models. Opening the overview.");location.hash="#overview";
+ }catch(e){msg(e.message,true)}};
+
+function route(){const v=(location.hash||"#home").slice(1);const id=["home","overview","compare","pipeline","explain","add"].includes(v)?v:"home";
+ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+id));
+ document.querySelectorAll("nav a").forEach(a=>{if(a.getAttribute("href")==="#"+id)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});window.scrollTo(0,0)}
+addEventListener("hashchange",route);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>setTimeout(render,50));
+fillSel();render();route();
+</script>
+</body>
+</html>
