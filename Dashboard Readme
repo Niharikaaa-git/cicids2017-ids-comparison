@@ -1,0 +1,61 @@
+# Network Intrusion Detection: ML vs Deep Learning on CIC-IDS2017
+
+Compares 3 machine learning and 3 deep learning models for detecting network attacks on the CIC-IDS2017 dataset (15 traffic classes, 78 flow features). All models train on the same preprocessed data and are scored on the same untouched test set, so the comparison is fair.
+
+## Results
+
+| Model | Accuracy | Precision | Recall | F1 (macro) | MCC | Train time (s) |
+|---|---|---|---|---|---|---|
+| **XGBoost** | 0.9985 | 0.756 | 0.771 | **0.763** | 0.995 | 426 |
+| LightGBM | 0.9983 | 0.759 | 0.766 | 0.762 | 0.995 | 276 |
+| Random Forest | 0.9976 | 0.725 | 0.755 | 0.734 | 0.992 | 85 |
+| MLP | 0.9493 | 0.521 | 0.839 | 0.591 | 0.867 | 155 |
+| Autoencoder + MLP | 0.9374 | 0.463 | 0.837 | 0.548 | 0.841 | 223 |
+| 1D CNN | 0.9109 | 0.380 | 0.756 | 0.438 | 0.780 | 425 |
+
+Tree-based models clearly beat the neural networks on this tabular flow data. The MLP-style models catch more attacks (higher recall) but raise many more false alarms (lower precision).
+
+## Pipeline
+
+1. Load the daily CSVs (10% sample each), then remove duplicates, infinities and missing values.
+2. Encode labels and make an 80/20 stratified train/test split.
+3. Fit StandardScaler on training data only (no leakage).
+4. Apply SMOTE to the training set only, raising rare classes to 30% of the majority class.
+5. Train all six models on the same resampled training set.
+6. Evaluate every model with one shared `evaluate()` function, then explain the best models with SHAP.
+
+## Project structure
+
+```
+00_Preprocessing.ipynb    load, clean, EDA, encode, split, scale, SMOTE
+01_RandomForest.ipynb     02_XGBoost.ipynb     03_LightGBM.ipynb
+04_MLP.ipynb              05_CNN1D.ipynb       06_AutoencoderMLP.ipynb
+07_Comparison.ipynb       comparison table, charts, SHAP
+utils.py                  shared evaluate() and save/load helpers
+results/                  per-model metrics (JSON) and comparison_table.csv
+plots/                    confusion matrices and comparison charts
+docs/index.html           results website (HTML, CSS, JavaScript, Chart.js)
+```
+
+## How to run
+
+1. Download the dataset from https://www.unb.ca/cic/datasets/ids-2017.html and put the CSV files in a `Data/` folder.
+2. Install dependencies: `pip install -r requirements.txt`
+3. Run `00_Preprocessing.ipynb` first, then notebooks `01` to `06` in any order, then `07_Comparison.ipynb`.
+
+## Tech stack
+
+- **Languages:** Python, JavaScript, HTML, CSS
+- **ML and data:** scikit-learn, XGBoost, LightGBM, TensorFlow/Keras, imbalanced-learn (SMOTE), SHAP, pandas, NumPy
+- **Visualization:** matplotlib, seaborn, Chart.js
+- **Tools:** Jupyter Notebook, Git, GitHub Pages
+
+## Limitations
+
+- Only a 10% sample of the dataset was used; very rare classes (for example Heartbleed, Infiltration) have too few rows to judge reliably.
+- Results come from a single train/test split.
+- ROC-AUC is not reported yet.
+
+## Dataset
+
+CIC-IDS2017, Canadian Institute for Cybersecurity, University of New Brunswick.
